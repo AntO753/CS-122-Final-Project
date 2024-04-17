@@ -68,37 +68,11 @@ abstract class Person {
             setLoginByteArr(textEncrypted);
         } catch (Exception e) {}
     }
-    protected void setByteArr(byte[] newArr) {
+    public void setByteArr(byte[] newArr) {
         this.byteArr = newArr;
     }
-    protected void setLoginByteArr(byte[] newArr) {
+    public void setLoginByteArr(byte[] newArr) {
         this.loginByteArr = newArr;
-    }
-    public boolean login(String username, String password) {
-        encryptLoginPassword(password);
-        boolean validUser = false;
-        boolean validPass = false;
-        boolean validLogin = false;
-        Integer numOfCorrectChars = 0;
-        
-        if (username == this.username) {
-            validUser = true;
-        }
-        for (int i = 0; i < this.byteArr.length; i++) {
-            try {
-                if (this.byteArr[i] == this.loginByteArr[i]) {
-                    numOfCorrectChars += 1;
-                }
-            } catch (IndexOutOfBoundsException e) {validPass = false; break;}
-        }
-        numOfCorrectChars = 0;
-        if (numOfCorrectChars == this.byteArr.length) {
-            validPass = true;
-        }
-        if (validUser == true && validPass == true) {
-            validLogin = true;
-        }
-        return validLogin;
     }
 }
 class User extends Person {
@@ -121,14 +95,14 @@ class User extends Person {
         this.username = username;
         this.password = password;
         encryptPassword();
-        this.userAmount = askInitialAmount();
+        this.userAmount = 0;
         this.carPurchases = new ArrayList<>();
         this.travelPurchases = new ArrayList<>();
         this.rentPurchases = new ArrayList<>();
         this.foodPurchases = new ArrayList<>();
         this.budget = new ArrayList<>(); this.budget.add(this.carPurchases); this.budget.add(this.travelPurchases); this.budget.add(this.rentPurchases); this.budget.add(foodPurchases);
     }
-    public double askInitialAmount() {
+    public double askUserAmount() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the amount you'd like to add: ");
         double userAmount = Double.parseDouble(scanner.nextLine());
@@ -136,23 +110,50 @@ class User extends Person {
         return userAmount; 
         
     }
-
-    public void addCarPurchases(double userAmount){
-        carPurchases.add(userAmount);
-
-    }
-       
-    public void addTravelPurchases(double userAmount){
-        travelPurchases.add(userAmount);
-    }
     
-    public void addRentPurchases(double userAmount){
-        rentPurchases.add(userAmount);
-    }
+    // Set maximum amount for User's checking account to 5000. 
+    // After transaction is complete, print remaining balace in checking account
+    // Rename variables "amount" to checkingAccount?
 
-    public void addFoodPurchases(double userAmount){
-        foodPurchases.add(userAmount);
+    public void addMoneyToCategory(double amount){
+        Scanner scanner = new Scanner(System.in);
+        int choice;
 
+        //Display Categories
+        System.out.println("Select the budget catergory you'd like to add to: ");
+        System.out.println("1. Car Purchases");
+        System.out.println("2. Travel Purchases");
+        System.out.println("3. Rent Purchases");
+        System.out.println("4. Food uchases");
+        choice = scanner.nextInt();
+
+        if (choice < 1 || choice > 4) {
+            System.out.println("Invalid choice. Try again.");
+        }
+        if (userAmount + amount > 3000){
+            System.out.println("Transaction incomplete. Insufficient funds.");
+        }
+
+        switch (choice) {
+            case 1:
+                budget.get(0).add(amount);
+                break;
+            case 2:
+                budget.get(1).add(amount);
+                break;
+            case 3:
+                budget.get(2).add(amount);
+                break;
+            case 4:
+                budget.get(3).add(amount);
+                break;
+            default:
+                break;
+        }
+        userAmount += amount;
+        System.out.println("Transaction complete!");
+
+        scanner.close();
     }
 
     public void createUser() {
@@ -208,25 +209,73 @@ class User extends Person {
                 }
             }
             usersList.add(new User(firstName, lastName, userName, password));
+            in.close();
             break;
         }
-    }  
+    } 
+    public User login(String username, String password) {
+        encryptLoginPassword(password);
+        boolean validUser = false;
+        boolean validPass = false;
+        Integer loggedInUserIndex = -1;
+        Integer numOfCorrectChars = 0;
+        User loggedInUser = new User();
+        loggedInUser.setFirstName("-1");
+        for (int i = 0; i < usersList.size(); i++) {
+            if (username == usersList.get(i).username) {
+                validUser = true;
+                loggedInUserIndex = i;
+                break;
+            }
+        }
+        for (int i = 0; i < this.byteArr.length; i++) {
+            try {
+                if (this.byteArr[i] == this.loginByteArr[i]) {
+                    numOfCorrectChars += 1;
+                }
+            } catch (IndexOutOfBoundsException e) {validPass = false; break;}
+        }
+        if (numOfCorrectChars == this.byteArr.length) {
+            validPass = true;
+        }
+        if (validUser == true && validPass == true) {
+            loggedInUser = usersList.get(loggedInUserIndex);
+        }
+        numOfCorrectChars = 0;
+        return loggedInUser;
+    } 
 }
     
 
 
 public class Main {
     public static void main(String[] args) {
-        User admin = new User();
+        User currUser = new User();
+        currUser.setFirstName("-1");
         Scanner in = new Scanner(System.in);
-        Integer uInp = null;
         while (true) {
+            Integer uInp = null;
             System.out.println("Welcome! Please enter the number next to the choice you would like to perform:\n1) Create a new account\n2) Login\n3) Exit");
-            try {uInp = Integer.parseInt(in.nextLine());} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;}
+            try {uInp = Integer.parseInt(in.nextLine());} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;} // Exception in thread "main" java.util.NoSuchElementException: No line found
             if (uInp == 1) {
-                admin.createUser();
+                currUser.createUser();
             } else if (uInp == 2) {
-                
+                while (true) {
+                    String username = null;
+                    String password = null;
+                    System.out.println("Please enter your username:");
+                    username = in.nextLine();
+                    System.out.println("Please enter your password:");
+                    password = in.nextLine();
+                    currUser = currUser.login(username, password);
+                    if (currUser.getFirstName().equals("-1")) {
+                        System.out.println("Either your username or password is incorrect");
+                        continue;
+                    } else {
+                        System.out.printf("Welcome %s, %s!\n", currUser.getLastName(), currUser.getFirstName());
+                        break;
+                    }
+                }
             } else if (uInp == 3) {
                 break;
             } else {
@@ -234,5 +283,14 @@ public class Main {
                 continue;
             }
         }
+        while (true) {
+            if (currUser.getFirstName().equals("-1")) {
+                break;
+            } else {
+                System.out.printf("Welcome %s, %s. Please select which option you would like to perform today:\n", currUser.getLastName(), currUser.getFirstName());
+                System.out.println("1) Adding money to a budgeting category\n");
+            }
+        }
+        in.close();
     }
 }
