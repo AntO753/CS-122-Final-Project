@@ -157,7 +157,7 @@ class User extends Person {
     }
 
     public void createUser() {
-        Scanner in = new Scanner(System.in);
+        Scanner in2 = new Scanner(System.in);
         char[] spChars = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
         char[] nums = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
         char[] uppercaseLetters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
@@ -167,17 +167,17 @@ class User extends Person {
             String userName = null;
             String password = null;
             System.out.println("Welcome to the account creation tool. To begin, please enter your first name: ");
-            firstName = in.nextLine();
+            firstName = in2.nextLine();
             System.out.println("Please enter your last name: ");
-            lastName = in.nextLine();
+            lastName = in2.nextLine();
             System.out.println("Please enter a username. You will need this to log in to your account: ");
-            userName = in.nextLine();
+            userName = in2.nextLine();
             while (true) {
                 boolean containsSpChar = false;
                 boolean containsNum = false;
                 boolean containsUppercaseLetter = false;
                 System.out.println("Lastly, please enter a password. Your password must be 8 characters long, contain a special character, a number, and an uppercase letter: ");
-                password = in.nextLine();
+                password = in2.nextLine();
                 for (int i = 0; i < spChars.length; i++) {
                     for (int j = 0; j < password.length(); j++) {
                         if (password.charAt(j) == spChars[i]) {
@@ -209,7 +209,7 @@ class User extends Person {
                 }
             }
             usersList.add(new User(firstName, lastName, userName, password));
-            in.close();
+            in2.close();
             break;
         }
     } 
@@ -246,7 +246,7 @@ class User extends Person {
     } 
 }
     
-
+// pass the scanner for multiple input methods.
 
 public class Main {
     public static void main(String[] args) {
@@ -254,9 +254,10 @@ public class Main {
         currUser.setFirstName("-1");
         Scanner in = new Scanner(System.in);
         while (true) {
-            Integer uInp = null;
+            Integer uInp = 0;
             System.out.println("Welcome! Please enter the number next to the choice you would like to perform:\n1) Create a new account\n2) Login\n3) Exit");
-            try {uInp = Integer.parseInt(in.nextLine());} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;} // Exception in thread "main" java.util.NoSuchElementException: No line found
+            String input = in.nextLine();
+            try {uInp = Integer.parseInt(input);} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;} // Exception in thread "main" java.util.NoSuchElementException: No line found
             if (uInp == 1) {
                 currUser.createUser();
             } else if (uInp == 2) {
