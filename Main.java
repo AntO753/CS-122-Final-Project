@@ -2,8 +2,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        User emptyUser = new User();
         User currUser = new User();
-        currUser.setFirstName("-1");
+        emptyUser.setFirstName("-1");
         Scanner in = new Scanner(System.in);
         boolean flag = false;
         while (true) {
@@ -15,7 +16,7 @@ public class Main {
             String input = in.nextLine();
             try {uInp = Integer.parseInt(input);} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;}
             if (uInp == 1) {
-                currUser.createUser();
+                emptyUser.createUser();
             } else if (uInp == 2) {
                 while (true) {
                     String username = null;
@@ -24,7 +25,7 @@ public class Main {
                     username = in.nextLine();
                     System.out.println("Please enter your password:");
                     password = in.nextLine();
-                    currUser = currUser.login(username, password);
+                    currUser = emptyUser.login(username, password);
                     if (currUser.getFirstName().equals("-1")) {
                         System.out.println("Either your username or password is incorrect");
                         continue;
@@ -42,11 +43,12 @@ public class Main {
         }
         Integer uInp2 = 0;
         while (true) {
+            boolean flag2 = false;
             if (currUser.getFirstName().equals("-1")) {
                 break;
             } else {
                 System.out.printf("Welcome %s, %s. Please select which option you would like to perform today:\n", currUser.getLastName(), currUser.getFirstName());
-                System.out.println("1) Add a Transaction\n2) View Balance\n3) Get Transactions");
+                System.out.println("1) Transaction\n2) View Balance\n3) Get Transactions\n4) Exit");
                 try {uInp2 = Integer.parseInt(in.nextLine());} catch (NumberFormatException e) {System.out.println("Please enter a number"); continue;}
                 if (uInp2 == 1) {
                     Double amt = 0.0;  
@@ -58,13 +60,23 @@ public class Main {
                     currUser.addMoneyToCategory(amt);
                 } else if (uInp2 == 2) {
                     Double balance = currUser.getCheckingAccountBalance();
-                    System.out.printf("Your current balance is %f", balance);
+                    System.out.printf("Your current balance is %.2f\n", balance);
                 } else if (uInp2 == 3) {
                     currUser.displayTransactions();
+                } else if (uInp2 == 4) {
+                    System.out.println("Goodbye!");
+                    flag2 = true;
+                    break;
                 } else {
                     System.out.println("Please enter a number from 1-3.");
                     continue;
                 }
+                if (flag2 == true) {
+                    break;
+                }
+            }
+            if (flag2 == true) {
+                break;
             }
         }
         in.close();

@@ -1,8 +1,5 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-// import javax.crypto.SecretKey;
-// import javax.crypto.Cipher;
-// import javax.crypto.KeyGenerator;
 
 public class User extends Person {
     private double userAmount;
@@ -12,9 +9,6 @@ public class User extends Person {
     private ArrayList<Double> rentPurchases;
     private ArrayList<Double> foodPurchases;
     private ArrayList<ArrayList<Double>> budget; // 0 = car purchases; 1 = travel; 2 = rent; 3 = food
-    // private SecretKey myDesKey;
-    // private byte[] byteArr;
-    // private byte[] loginByteArr;
     ArrayList<User> usersList = new ArrayList<>();
     Scanner scanner = new Scanner(System.in);
     public User() {
@@ -28,7 +22,6 @@ public class User extends Person {
         this.lastName = lastName;
         this.username = username;
         this.password = password;
-        // encryptPassword();
         this.userAmount = 0;
         this.checkingAccountBalance = 25000.0;
         this.carPurchases = new ArrayList<>();
@@ -52,86 +45,104 @@ public class User extends Person {
     }
     
     public void addMoneyToCategory(double amount) {
-        int choice;
+        Integer choice = 0;
         //Display Categories
         System.out.println("Select the budget catergory you'd like to add to: ");
         System.out.println("1. Car Purchases");
         System.out.println("2. Travel Purchases");
         System.out.println("3. Rent Purchases");
         System.out.println("4. Food Purchases");
-        choice = scanner.nextInt();
-
-        if (choice < 1 || choice > 4) {
-            System.out.println("Invalid choice. Try again.");
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("Please enter a number from 1-4.");
+            choice = 0;
         }
-        if (checkingAccountBalance < amount) {
-            System.out.println("Transaction incomplete. Insufficient funds in the checking account.");
-            System.out.printf("Current checking account balance: $%.2f\n", checkingAccountBalance);
+        if (choice >= 1 && choice <= 4) {
+            if (checkingAccountBalance < amount) {
+                System.out.println("Transaction incomplete. Insufficient funds in the checking account.");
+                System.out.printf("Current checking account balance: $%.2f\n", checkingAccountBalance);
+            }
+            if (userAmount + amount > 8000){
+                System.out.println("Sorry. This amount exceeds the transfer limit of $8000. Please enter a lower amount.");
+            }
+    
+            switch (choice) {
+                case 1:
+                    budget.get(0).add(amount);
+                    System.out.printf("You have added $%.2f into Car Purchases. \n", amount);
+                    break;
+                case 2:
+                    budget.get(1).add(amount);
+                    System.out.printf("You have added $%.2f into Travel Purchases. \n", amount);
+                    break;
+                case 3:
+                    budget.get(2).add(amount);
+                    System.out.printf("You have added $%.2f into Rent Purchases. \n", amount);
+                    break;
+                case 4:
+                    budget.get(3).add(amount);
+                    System.out.printf("You have added $%.2f into Food Purchases. \n", amount);
+                    break;
+                default:
+                    break;
+            }
+            userAmount += amount;
+            checkingAccountBalance -= amount;
+            System.out.printf("Transaction complete! Remaining balance in checking: $%.2f\n", checkingAccountBalance);
+        } else {
+            System.out.println("Invalid choice. Please try again.");
         }
-        if (userAmount + amount > 8000){
-            System.out.println("Sorry. This amount exceeds the transfer limit of $8000. Please enter a lower amount.");
-        }
-
-        switch (choice) {
-            case 1:
-                budget.get(0).add(amount);
-                System.out.printf("You have added $%.2f into Car Purchases. \n", amount);
-                break;
-            case 2:
-                budget.get(1).add(amount);
-                System.out.printf("You have added $%.2f into Travel Purchases. \n", amount);
-                break;
-            case 3:
-                budget.get(2).add(amount);
-                System.out.printf("You have added $%.2f into Rent Purchases. \n", amount);
-                break;
-            case 4:
-                budget.get(3).add(amount);
-                System.out.printf("You have added $%.2f into Food Purchases. \n", amount);
-                break;
-            default:
-                break;
-        }
-        userAmount += amount;
-        checkingAccountBalance -= amount;
-        System.out.printf("Transaction complete! Remaining balance in checking: $%.2f\n", checkingAccountBalance);
     }
-
+    
     public void displayTransactions(){
         System.out.println("Select the budget catergory you'd like to view transactions for");
         System.out.println("1. Car Purchases");
         System.out.println("2. Travel Purchases");
         System.out.println("3. Rent Purchases");
         System.out.println("4. Food Purchases");
-        int choice = scanner.nextInt();
-    
-        ArrayList<Double> selectedCategory = new ArrayList<>(); budget.get(choice - 1);
-        switch (choice) {
-            case 1:
-                System.out.println("Transactions for Car Purchases");
-                break;
-            case 2:
-                System.out.println("Transactions for Travel Purchases");
-                break;
-            case 3:
-                System.out.println("Transactions for Rent Purchases.");
-                break;
-            case 4:
-                System.out.println("Transaction for Food Purchases");
-                break;
-            default:
-                System.out.println("Invalid choice. Try again.");
-                return;
-        }
-        
-        if (selectedCategory.isEmpty()) {
-            System.out.println("No transactions available.");
-        } else {
-            for (int i = 0; i < selectedCategory.size(); i ++) {
-                System.out.printf("Transaction %d: $%.2f\n", i + 1, selectedCategory.get(i));
-                
+        Integer choice = 0;
+        try {choice = Integer.parseInt(scanner.nextLine());} catch (Exception e) {System.out.println("Please enter a number from 1-4."); choice = 0;}
+
+        if (choice == 1) {
+            if (budget.get(0).size() == 0) {
+                System.out.println("This category is empty.");
+            } else {
+                System.out.println("Transactions for Car Purchases:");
+                for (int i = 0; i < budget.get(0).size(); i++) {
+                    System.out.printf("Transaction %d: $%.2f\n", i + 1, budget.get(0).get(i));
+                }
             }
-        } 
+        } else if (choice == 2) {
+            if (budget.get(1).size() == 0) {
+                System.out.println("This category is empty.");
+            } else {
+                System.out.println("Transactions for Travel Purchases:");
+                for (int i = 0; i < budget.get(1).size(); i++) {
+                    System.out.printf("Transaction %d: $%.2f\n", i + 1, budget.get(1).get(i));
+                }
+            }
+        } else if (choice == 3) {
+            if (budget.get(2).size() == 0) {
+                System.out.println("This category is empty.");
+            } else {
+                System.out.println("Transactions for Rent Purchases:");
+                for (int i = 0; i < budget.get(2).size(); i++) {
+                    System.out.printf("Transaction %d: $%.2f\n", i + 1, budget.get(2).get(i));
+                }
+            }
+        } else if (choice == 4) {
+            if (budget.get(3).size() == 0) {
+                System.out.println("This category is empty.");
+            } else {
+                System.out.println("Transactions for Food Purchases:");
+                for (int i = 0; i < budget.get(3).size(); i++) {
+                    System.out.printf("Transaction %d: $%.2f\n", i + 1, budget.get(3).get(i));
+                }
+            }
+        } else {
+            System.out.println("Try again. Please enter a number from 1-4.");
+        }
     }
     
     public void createUser() {
@@ -190,75 +201,38 @@ public class User extends Person {
         }
     } 
     public User login(String username, String password) {
-        // encryptLoginPassword(password);
-        boolean validUser = false;
-        boolean validPass = false;
+        boolean validUser;
+        boolean validPass;
+        User loggedInUser;
         Integer loggedInUserIndex = -1;
-        User loggedInUser = new User();
-        loggedInUser.setFirstName("-1");
-        for (int i = 0; i < usersList.size(); i++) {
-            if (username.equals(usersList.get(i).username)) {
-                validUser = true;
-                loggedInUserIndex = i;
+        boolean flag = true;
+        while (true) {
+            validUser = false;
+            validPass = false;
+            loggedInUser = new User();
+            loggedInUser.setFirstName("-1");
+            for (int i = 0; i < usersList.size(); i++) {
+                if (username.equals(usersList.get(i).username)) {
+                    validUser = true;
+                    loggedInUserIndex = i;
+                    break;
+                }
+            }
+            try {
+                if (password.equals(usersList.get(loggedInUserIndex).password)) {
+                    validPass = true;
+                }
+            } catch (IndexOutOfBoundsException e) {System.out.println("Your username is incorrect. Please try again."); flag = true; break;}
+            if (validUser == true && validPass == true) {
+                loggedInUser = usersList.get(loggedInUserIndex);
+                flag = true;
+                break;
+            }
+            if (flag == true) {
                 break;
             }
         }
-        if (password.equals(usersList.get(loggedInUserIndex).password)) {
-            validPass = true;
-        } 
-        // for (int i = 0; i < usersList.size(); i++) {
-        //     if (username == usersList.get(i).username) {
-        //         validUser = true;
-        //         loggedInUserIndex = i;
-        //         break;
-        //     }
-        // }
-        // for (int i = 0; i < byteArr.length; i++) {
-        //     try {
-        //         if (usersList.get(loggedInUserIndex).byteArr == loginByteArr) {
-        //             validPass = true;
-        //         }
-        //     } catch (IndexOutOfBoundsException e) {validPass = false; break;}
-        // }
-        if (validUser == true && validPass == true) {
-            loggedInUser = usersList.get(loggedInUserIndex);
-        }
         return loggedInUser;
     }
-    // private void encryptPassword() {
-    //     try {
-    //         KeyGenerator keygenerator = KeyGenerator.getInstance("DES");
-    //         myDesKey = keygenerator.generateKey();
-    //         Cipher desCipher = Cipher.getInstance("DES");
-    //         byte[] text = usersList.getLast().password.getBytes("UTF8");
-    //         desCipher.init(Cipher.ENCRYPT_MODE, myDesKey);
-    //         byte[] textEncrypted = desCipher.doFinal(text);
-    //         usersList.getLast().password = new String(textEncrypted);
-    //         usersList.getLast().setByteArr(textEncrypted);
-    //     } catch (Exception e) {}
-    // }
-    // private void encryptLoginPassword(String password) {
-    //     try {
-    //         Cipher desCipher = Cipher.getInstance("DES");
-    //         byte[] text = password.getBytes("UTF8");
-    //         desCipher.init(Cipher.ENCRYPT_MODE, myDesKey);
-    //         byte[] textEncrypted = desCipher.doFinal(text);
-    //         setLoginByteArr(textEncrypted);
-    //     } catch (Exception e) {}
-    // }
-    // private void setByteArr(byte[] newArr) {
-    //     usersList.getLast().byteArr = newArr;
-    //     System.out.println("Saved password from acc creation");
-    //     for (int i = 0; i < byteArr.length; i++) {
-    //         System.out.println(usersList.getLast().byteArr);
-    //     }
-    // }
-    // private void setLoginByteArr(byte[] newArr) {
-    //     loginByteArr = newArr;
-    //     System.out.println("new password from login");
-    //     for (int i = 0; i < loginByteArr.length; i++) {
-    //         System.out.println(loginByteArr[i]);
-    //     }
-    // }
 }
 
