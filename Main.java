@@ -44,7 +44,8 @@ public class Main {
         Integer uInp2 = 0;
         while (true) {
             boolean flag2 = false;
-            if (currUser.getFirstName().equals("-1")) {
+            if (emptyUser.getFirstName().equals("-1")) {
+                flag2 = true;
                 break;
             } else {
                 System.out.printf("Welcome %s, %s. Please select which option you would like to perform today:\n", currUser.getLastName(), currUser.getFirstName());
