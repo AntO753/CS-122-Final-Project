@@ -45,53 +45,58 @@ public class User extends Person {
     }
     
     public void addMoneyToCategory(double amount) {
-        Integer choice = 0;
-        //Display Categories
-        System.out.println("Select the budget catergory you'd like to add to: ");
-        System.out.println("1. Car Purchases");
-        System.out.println("2. Travel Purchases");
-        System.out.println("3. Rent Purchases");
-        System.out.println("4. Food Purchases");
-        try {
-            choice = Integer.parseInt(scanner.nextLine());
-        } catch (Exception e) {
-            System.out.println("Please enter a number from 1-4.");
-            choice = 0;
-        }
-        if (choice >= 1 && choice <= 4) {
-            if (checkingAccountBalance < amount) {
-                System.out.println("Transaction incomplete. Insufficient funds in the checking account.");
-                System.out.printf("Current checking account balance: $%.2f\n", checkingAccountBalance);
+        // Display Categories. Added while true loop to break if amt entered < 8k or if balance > amt entered 
+        while (true) {
+            Integer choice = 0;
+            System.out.println("Select the budget catergory you'd like to add to: ");
+            System.out.println("1. Car Purchases");
+            System.out.println("2. Travel Purchases");
+            System.out.println("3. Rent Purchases");
+            System.out.println("4. Food Purchases");
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (Exception e) {
+                System.out.println("Please enter a number from 1-4.");
+                choice = 0;
             }
-            if (userAmount + amount > 8000){
-                System.out.println("Sorry. This amount exceeds the transfer limit of $8000. Please enter a lower amount.");
+            if (choice >= 1 && choice <= 4) {
+                if (checkingAccountBalance < amount) {
+                    System.out.println("Transaction incomplete. Insufficient funds in the checking account.");
+                    System.out.printf("Current checking account balance: $%.2f\n", checkingAccountBalance);
+                    break;
+                }
+                if (userAmount + amount > 8000){
+                    System.out.println("Sorry. This amount exceeds the transfer limit of $8,000. Please enter a lower amount.");
+                    break;
+                }
+                switch (choice) {
+                    case 1:
+                        budget.get(0).add(amount);
+                        System.out.printf("You have added $%.2f into Car Purchases. \n", amount);
+                        break;
+                    case 2:
+                        budget.get(1).add(amount);
+                        System.out.printf("You have added $%.2f into Travel Purchases. \n", amount);
+                        break;
+                    case 3:
+                        budget.get(2).add(amount);
+                        System.out.printf("You have added $%.2f into Rent Purchases. \n", amount);
+                        break;
+                    case 4:
+                        budget.get(3).add(amount);
+                        System.out.printf("You have added $%.2f into Food Purchases. \n", amount);
+                        break;
+                    default:
+                        break;
+                }
+                userAmount += amount;
+                checkingAccountBalance -= amount;
+                System.out.printf("Transaction complete! Remaining balance in checking: $%.2f\n", checkingAccountBalance);
+                userAmount = 0.0;
+                break;
+            } else {
+                System.out.println("Invalid choice. Please try again.");
             }
-    
-            switch (choice) {
-                case 1:
-                    budget.get(0).add(amount);
-                    System.out.printf("You have added $%.2f into Car Purchases. \n", amount);
-                    break;
-                case 2:
-                    budget.get(1).add(amount);
-                    System.out.printf("You have added $%.2f into Travel Purchases. \n", amount);
-                    break;
-                case 3:
-                    budget.get(2).add(amount);
-                    System.out.printf("You have added $%.2f into Rent Purchases. \n", amount);
-                    break;
-                case 4:
-                    budget.get(3).add(amount);
-                    System.out.printf("You have added $%.2f into Food Purchases. \n", amount);
-                    break;
-                default:
-                    break;
-            }
-            userAmount += amount;
-            checkingAccountBalance -= amount;
-            System.out.printf("Transaction complete! Remaining balance in checking: $%.2f\n", checkingAccountBalance);
-        } else {
-            System.out.println("Invalid choice. Please try again.");
         }
     }
     
@@ -149,6 +154,7 @@ public class User extends Person {
         char[] spChars = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
         char[] nums = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
         char[] uppercaseLetters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        char[] lowercaseLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         while (true) {
             String firstName = null;
             String lastName = null;
@@ -164,8 +170,17 @@ public class User extends Person {
                 boolean containsSpChar = false;
                 boolean containsNum = false;
                 boolean containsUppercaseLetter = false;
+                boolean containsLowercaseLetter = false;
                 System.out.println("Lastly, please enter a password. Your password must be 8 characters long, contain a special character, a number, and an uppercase letter: ");
                 password = scanner.nextLine();
+                for (int i = 0; i < lowercaseLetters.length; i++) {
+                    for (int j = 0; j < password.length(); j++) {
+                        if (password.charAt(j) == lowercaseLetters[i]) {
+                            containsLowercaseLetter = true;
+                            break;
+                        }
+                    }
+                }
                 for (int i = 0; i < spChars.length; i++) {
                     for (int j = 0; j < password.length(); j++) {
                         if (password.charAt(j) == spChars[i]) {
@@ -182,7 +197,7 @@ public class User extends Person {
                         }
                     }
                 }
-                for (int m = 0; m < nums.length; m++) {
+                for (int m = 0; m < uppercaseLetters.length; m++) {
                     for (int n = 0; n < password.length(); n++) {
                         if (password.charAt(n) == uppercaseLetters[m]) {
                             containsUppercaseLetter = true;
@@ -190,7 +205,7 @@ public class User extends Person {
                         }
                     }
                 }
-                if (password.length() >= 8 && containsSpChar == true && containsNum == true && containsUppercaseLetter == true) {
+                if (password.length() >= 8 && containsSpChar == true && containsNum == true && containsUppercaseLetter == true && containsLowercaseLetter == true) {
                     break;
                 } else {
                     System.out.println("Invalid password. Please try again.");
