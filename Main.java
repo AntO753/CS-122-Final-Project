@@ -7,6 +7,7 @@ public class Main {
         emptyUser.setFirstName("-1");
         Scanner in = new Scanner(System.in);
         boolean flag = false;
+        boolean loggedIn = false;
         while (true) {
             Integer uInp = 0;
             if (flag == true) {
@@ -31,6 +32,7 @@ public class Main {
                         continue;
                     } else {
                         flag = true;
+                        loggedIn = true;
                         break;
                     }
                 }
@@ -44,7 +46,7 @@ public class Main {
         Integer uInp2 = 0;
         while (true) {
             boolean flag2 = false;
-            if (emptyUser.getFirstName().equals("-1")) {
+            if (emptyUser.getFirstName().equals("-1") && loggedIn == false) {
                 flag2 = true;
                 break;
             } else {
